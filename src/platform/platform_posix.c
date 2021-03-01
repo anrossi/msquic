@@ -386,6 +386,52 @@ CxPlatEventUninitialize(
 }
 
 void
+CxPlatEventInitialize(
+    _Out_ CXPLAT_EVENT* Event,
+    _In_ CXPLAT_EVENT_OBJECT* EventObj,
+    _In_ BOOLEAN ManualReset,
+    _In_ BOOLEAN InitialState
+    )
+{
+    pthread_condattr_t Attr = {0};
+    int Result;
+
+    EventObj->AutoReset = !ManualReset;
+    EventObj->Signaled = InitialState;
+
+    Result = pthread_mutex_init(&EventObj->Mutex, NULL);
+    CXPLAT_FRE_ASSERT(Result == 0);
+    Result = pthread_condattr_init(&Attr);
+    CXPLAT_FRE_ASSERT(Result == 0);
+#if defined(CX_PLATFORM_LINUX)
+    Result = pthread_condattr_setclock(&Attr, CLOCK_MONOTONIC);
+    CXPLAT_FRE_ASSERT(Result == 0);
+#endif // CX_PLATFORM_LINUX
+    Result = pthread_cond_init(&EventObj->Cond, &Attr);
+    CXPLAT_FRE_ASSERT(Result == 0);
+    Result = pthread_condattr_destroy(&Attr);
+    CXPLAT_FRE_ASSERT(Result == 0);
+
+    (*Event) = EventObj;
+}
+
+void
+CxPlatEventInlineUninitialize(
+    _Inout_ CXPLAT_EVENT Event
+    )
+{
+    CXPLAT_EVENT_OBJECT* EventObj = Event;
+    int Result;
+
+    Result = pthread_cond_destroy(&EventObj->Cond);
+    CXPLAT_FRE_ASSERT(Result == 0);
+    Result = pthread_mutex_destroy(&EventObj->Mutex);
+    CXPLAT_FRE_ASSERT(Result == 0);
+
+    EventObj = NULL;
+}
+
+void
 CxPlatEventSet(
     _Inout_ CXPLAT_EVENT Event
     )

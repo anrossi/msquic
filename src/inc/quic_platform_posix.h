@@ -586,7 +586,20 @@ CxPlatEventInitialize(
     );
 
 void
+CxPlatEventInlineInitialize(
+    _Out_ CXPLAT_EVENT* Event,
+    _In_ CXPLAT_EVENT_OBJECT* EventObj,
+    _In_ BOOLEAN ManualReset,
+    _In_ BOOLEAN InitialState
+    );
+
+void
 CxPlatEventUninitialize(
+    _Inout_ CXPLAT_EVENT Event
+    );
+
+void
+CxPlatEventInlineUninitialize(
     _Inout_ CXPLAT_EVENT Event
     );
 

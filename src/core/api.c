@@ -122,6 +122,9 @@ MsQuicConnectionClose(
 
     } else {
 
+#ifndef _WIN32
+        CXPLAT_EVENT_OBJECT EventObject;
+#endif
         CXPLAT_EVENT CompletionEvent;
         QUIC_OPERATION Oper = { 0 };
         QUIC_API_CONTEXT ApiCtx;
@@ -131,7 +134,12 @@ MsQuicConnectionClose(
         Oper.API_CALL.Context = &ApiCtx;
 
         ApiCtx.Type = QUIC_API_TYPE_CONN_CLOSE;
+#ifndef _WIN32
+        CxPlatEventInlineInitialize(&CompletionEvent, &EventObject, TRUE, FALSE);
+#else
         CxPlatEventInitialize(&CompletionEvent, TRUE, FALSE);
+#endif
+
         ApiCtx.Completed = &CompletionEvent;
         ApiCtx.Status = NULL;
 
@@ -144,6 +152,11 @@ MsQuicConnectionClose(
             "[ api] Waiting on operation");
         CxPlatEventWaitForever(CompletionEvent);
         CxPlatEventUninitialize(CompletionEvent);
+#ifndef _WIN32
+        CxPlatEventInlineUninitialize(CompletionEvent);
+#else
+        CxPlatEventUninitialize(CompletionEvent);
+#endif
     }
 
     //
@@ -719,6 +732,9 @@ MsQuicStreamClose(
             }
         }
 
+#ifndef _WIN32
+        CXPLAT_EVENT_OBJECT EventObject;
+#endif
         CXPLAT_EVENT CompletionEvent;
         QUIC_OPERATION Oper = { 0 };
         QUIC_API_CONTEXT ApiCtx;
@@ -728,7 +744,11 @@ MsQuicStreamClose(
         Oper.API_CALL.Context = &ApiCtx;
 
         ApiCtx.Type = QUIC_API_TYPE_STRM_CLOSE;
+#ifndef _WIN32
+        CxPlatEventInlineInitialize(&CompletionEvent, &EventObject, TRUE, FALSE);
+#else
         CxPlatEventInitialize(&CompletionEvent, TRUE, FALSE);
+#endif
         ApiCtx.Completed = &CompletionEvent;
         ApiCtx.Status = NULL;
         ApiCtx.STRM_CLOSE.Stream = Stream;
@@ -741,7 +761,11 @@ MsQuicStreamClose(
             ApiWaitOperation,
             "[ api] Waiting on operation");
         CxPlatEventWaitForever(CompletionEvent);
+#ifndef _WIN32
+        CxPlatEventInlineUninitialize(CompletionEvent);
+#else
         CxPlatEventUninitialize(CompletionEvent);
+#endif
     }
 
 Error:
@@ -830,6 +854,9 @@ MsQuicStreamStart(
 
         QUIC_CONN_VERIFY(Connection, !Connection->State.HandleClosed);
 
+#ifndef _WIN32
+        CXPLAT_EVENT_OBJECT EventObject;
+#endif
         CXPLAT_EVENT CompletionEvent;
         QUIC_OPERATION Oper = { 0 };
         QUIC_API_CONTEXT ApiCtx;
@@ -839,7 +866,11 @@ MsQuicStreamStart(
         Oper.API_CALL.Context = &ApiCtx;
 
         ApiCtx.Type = QUIC_API_TYPE_STRM_START;
+#ifndef _WIN32
+        CxPlatEventInlineInitialize(&CompletionEvent, &EventObject, TRUE, FALSE);
+#else
         CxPlatEventInitialize(&CompletionEvent, TRUE, FALSE);
+#endif
         ApiCtx.Completed = &CompletionEvent;
         ApiCtx.Status = &Status;
         ApiCtx.STRM_START.Stream = Stream;
@@ -853,7 +884,11 @@ MsQuicStreamStart(
             ApiWaitOperation,
             "[ api] Waiting on operation");
         CxPlatEventWaitForever(CompletionEvent);
+#ifndef _WIN32
+        CxPlatEventInlineUninitialize(CompletionEvent);
+#else
         CxPlatEventUninitialize(CompletionEvent);
+#endif
     }
 
 Exit:
@@ -1332,6 +1367,9 @@ MsQuicSetParam(
 
     QUIC_CONN_VERIFY(Connection, !Connection->State.HandleClosed);
 
+#ifndef _WIN32
+        CXPLAT_EVENT_OBJECT EventObject;
+#endif
     QUIC_OPERATION Oper = { 0 };
     QUIC_API_CONTEXT ApiCtx;
 
@@ -1340,7 +1378,11 @@ MsQuicSetParam(
     Oper.API_CALL.Context = &ApiCtx;
 
     ApiCtx.Type = QUIC_API_TYPE_SET_PARAM;
-    CxPlatEventInitialize(&CompletionEvent, TRUE, FALSE);
+#ifndef _WIN32
+        CxPlatEventInlineInitialize(&CompletionEvent, &EventObject, TRUE, FALSE);
+#else
+        CxPlatEventInitialize(&CompletionEvent, TRUE, FALSE);
+#endif
     ApiCtx.Completed = &CompletionEvent;
     ApiCtx.Status = &Status;
     ApiCtx.SET_PARAM.Handle = Handle;
@@ -1357,7 +1399,11 @@ MsQuicSetParam(
         ApiWaitOperation,
         "[ api] Waiting on operation");
     CxPlatEventWaitForever(CompletionEvent);
-    CxPlatEventUninitialize(CompletionEvent);
+#ifndef _WIN32
+        CxPlatEventInlineUninitialize(CompletionEvent);
+#else
+        CxPlatEventUninitialize(CompletionEvent);
+#endif
 
 Error:
 
@@ -1443,6 +1489,9 @@ MsQuicGetParam(
 
     QUIC_CONN_VERIFY(Connection, !Connection->State.HandleClosed);
 
+#ifndef _WIN32
+    CXPLAT_EVENT_OBJECT EventObject;
+#endif
     QUIC_OPERATION Oper = { 0 };
     QUIC_API_CONTEXT ApiCtx;
 
@@ -1451,7 +1500,11 @@ MsQuicGetParam(
     Oper.API_CALL.Context = &ApiCtx;
 
     ApiCtx.Type = QUIC_API_TYPE_GET_PARAM;
-    CxPlatEventInitialize(&CompletionEvent, TRUE, FALSE);
+#ifndef _WIN32
+        CxPlatEventInlineInitialize(&CompletionEvent, &EventObject, TRUE, FALSE);
+#else
+        CxPlatEventInitialize(&CompletionEvent, TRUE, FALSE);
+#endif
     ApiCtx.Completed = &CompletionEvent;
     ApiCtx.Status = &Status;
     ApiCtx.GET_PARAM.Handle = Handle;
@@ -1468,7 +1521,11 @@ MsQuicGetParam(
         ApiWaitOperation,
         "[ api] Waiting on operation");
     CxPlatEventWaitForever(CompletionEvent);
-    CxPlatEventUninitialize(CompletionEvent);
+#ifndef _WIN32
+        CxPlatEventInlineUninitialize(CompletionEvent);
+#else
+        CxPlatEventUninitialize(CompletionEvent);
+#endif
 
 Error:
 
