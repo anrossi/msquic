@@ -151,7 +151,6 @@ MsQuicConnectionClose(
             ApiWaitOperation,
             "[ api] Waiting on operation");
         CxPlatEventWaitForever(CompletionEvent);
-        CxPlatEventUninitialize(CompletionEvent);
 #ifndef _WIN32
         CxPlatEventInlineUninitialize(CompletionEvent);
 #else
