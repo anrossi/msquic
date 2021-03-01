@@ -386,7 +386,7 @@ CxPlatEventUninitialize(
 }
 
 void
-CxPlatEventInitialize(
+CxPlatEventInlineInitialize(
     _Out_ CXPLAT_EVENT* Event,
     _In_ CXPLAT_EVENT_OBJECT* EventObj,
     _In_ BOOLEAN ManualReset,
